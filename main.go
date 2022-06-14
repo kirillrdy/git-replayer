@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func crash(err error) {
@@ -19,11 +20,13 @@ func main() {
 	crash(err)
 	commits := strings.Split(string(out), "\n")
 	for i, commit := range commits {
-		log.Printf("%d", i)
+		log.Printf("%d %s", i, commit)
+		start := time.Now()
 		err := exec.Command("git", "checkout", commit).Run()
 		crash(err)
 
 		err = exec.Command("nix", "build", ".#awsebcli").Run()
+		log.Printf("%d %s", i, time.Since(start).String())
 		crash(err)
 	}
 }
