@@ -25,7 +25,8 @@ func main() {
 		err := exec.Command("git", "checkout", commit).Run()
 		crash(err)
 
-		err = exec.Command("nix", "build", ".#awsebcli").Run()
+		//err = exec.Command("nix", "build", ".#awsebcli").Run()
+		err = exec.Command("nix-build", "-A", "awsebcli").Run()
 		log.Printf("%d %s", i, time.Since(start).String())
 		crash(err)
 	}
