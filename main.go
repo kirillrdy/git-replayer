@@ -16,7 +16,7 @@ func crash(err error) {
 
 func main() {
 	os.Chdir("../nixpkgs")
-	out, err := exec.Command("git", "rev-list", "master").CombinedOutput()
+	out, err := exec.Command("git", "rev-list", "--topo-order",  "master").CombinedOutput()
 	crash(err)
 	commits := strings.Split(string(out), "\n")
 	for i, commit := range commits {
