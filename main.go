@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -16,18 +17,23 @@ func crash(err error) {
 
 func main() {
 	os.Chdir("../nixpkgs")
-	out, err := exec.Command("git", "rev-list", "--topo-order",  "master").CombinedOutput()
+	out, err := exec.Command("git", "rev-list", "--topo-order", "master").CombinedOutput()
 	crash(err)
 	commits := strings.Split(string(out), "\n")
 	for i, commit := range commits {
-		log.Printf("%d %s", i, commit)
 		start := time.Now()
 		err := exec.Command("git", "checkout", commit).Run()
 		crash(err)
 
 		//err = exec.Command("nix", "build", ".#awsebcli").Run()
 		err = exec.Command("nix-build", "-A", "awsebcli").Run()
-		log.Printf("%d %s", i, time.Since(start).String())
-		crash(err)
+		duration := time.Since(start)
+		if duration > 15*time.Second {
+			log.Printf("%d %s", i, time.Since(start).String())
+		} else if err != nil {
+			log.Printf("%d %s", i, err)
+		} else {
+			fmt.Print(".")
+		}
 	}
 }
